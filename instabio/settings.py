@@ -18,10 +18,10 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Reads the DEBUG setting from an environment variable. Defaults to False.
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = True
 
 # Defines the allowed hosts. Render's hostname is added automatically.
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
@@ -76,19 +76,16 @@ WSGI_APPLICATION = 'instabio.wsgi.application'
 # ==============================================================================
 # DATABASE
 # ==============================================================================
-
 DATABASES = {
     'default': dj_database_url.config(
-        # Reads the DATABASE_URL environment variable.
-        # Falls back to SQLite for local development if the variable is not set.
+        # This reads the DATABASE_URL from your environment.
+        # It correctly falls back to SQLite for local development.
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        ssl_require=True,
+        conn_max_age=600
+        # The problematic 'ssl_require=True' line has been removed.
     )
 }
-
-
-# ==============================================================================
+# ===================================================================
 # PASSWORD VALIDATION
 # ==============================================================================
 
