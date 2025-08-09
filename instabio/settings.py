@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Reads the SECRET_KEY from an environment variable.
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-a-temporary-key-for-local-use-only')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Reads the DEBUG setting from an environment variable. Defaults to False.
