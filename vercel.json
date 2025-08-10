@@ -2,17 +2,12 @@
   "builds": [
     {
       "src": "instabio/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "15mb",
-        "runtime": "python3.11",
-        "buildCommand": "./build_files.sh"
-      }
+      "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/static/(.*)",
+      "src": "/staticfiles/(.*)",
       "dest": "/staticfiles/$1"
     },
     {
