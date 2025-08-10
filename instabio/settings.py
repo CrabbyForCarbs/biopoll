@@ -21,10 +21,22 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-a-temporary-key-for-l
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Defines the allowed hosts. Render's hostname is added automatically.
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = []
+
+# Add the Vercel deployment URL to the allowed hosts
+VERCEL_URL = os.environ.get('VERCEL_URL')
+if VERCEL_URL:
+    # The VERCEL_URL includes 'https://', so we split to get just the hostname
+    ALLOWED_HOSTS.append(VERCEL_URL.split('//')[1])
+
+# Add the Render deployment URL to the allowed hosts
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+# You can add your local hosts for development if needed
+if DEBUG:
+    ALLOWED_HOSTS.extend(['127.0.0.1', 'localhost'])
 
 
 # ==============================================================================
