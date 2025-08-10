@@ -21,7 +21,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-a-temporary-key-for-l
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Defines the allowed hosts for different environments.
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Add the Vercel deployment URL to the allowed hosts
 VERCEL_URL = os.environ.get('VERCEL_URL')

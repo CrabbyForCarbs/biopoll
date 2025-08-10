@@ -5,6 +5,13 @@ from django.http import JsonResponse
 from django.db.models import F
 from django.db import transaction # Import the transaction module
 from .models import Question, Choice
+import os
+def index(request):
+    # Print the VERCEL_URL to the logs for debugging
+    print("VERCEL_URL environment variable is:", os.environ.get('VERCEL_URL'))
+    
+    question = get_object_or_404(Question, pk=1)
+    return render(request, 'polls/index.html', {'question': question})
 
 def index(request):
     question = get_object_or_404(Question, pk=1)
