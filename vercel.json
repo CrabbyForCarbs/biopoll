@@ -1,23 +1,30 @@
 {
+  "version": 2,
   "builds": [
-    {
-      "src": "instabio/wsgi.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "15mb",
-        "runtime": "python3.11",
-        "buildCommand": "bash build_files.sh"
+      {
+          "src": "a2svhackathon/wsgi.py",
+          "use": "@vercel/python",
+          "config": {
+              "maxLambdaSize": "15mb",
+              "runtime": "Python3.9"
+          }
+      },
+      {
+          "src": "build_files.sh",
+          "use": "@vercel/static-build",
+          "config": {
+              "distDir": "staticfiles_build"
+          }
       }
-    }
   ],
   "routes": [
-    {
-      "src": "/staticfiles/(.*)",
-      "dest": "/staticfiles/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "instabio/wsgi.py"
-    }
+      {
+          "src": "/static/(.*)",
+          "dest": "/static/$1"
+      },
+      {
+          "src": "/(.*)",
+          "dest": "a2svhackathon/wsgi.py"
+      }
   ]
 }

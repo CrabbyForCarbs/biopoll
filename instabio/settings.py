@@ -3,10 +3,11 @@
 import os
 from pathlib import Path
 import dj_database_url
-
+from decouple import config
+from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv()
 
 # ==============================================================================
 # CORE SETTINGS
@@ -14,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Reads the SECRET_KEY from an environment variable.
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-a-temporary-key-for-local-use-only')
+SECRET_KEY = os.getenv('SECRET_KEY') if "SECRET_KEY" in os.environ["SECRET_KEY"] else config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Reads the DEBUG setting from an environment variable. Defaults to False.
@@ -124,7 +125,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 # This is where collectstatic will gather all static files.
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build", "static")
+STATIC_URL = "/staticfiles/"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 # Using Whitenoise for efficient static file serving.
 STORAGES = {
     "staticfiles": {
