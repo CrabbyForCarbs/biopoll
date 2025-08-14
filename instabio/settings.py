@@ -4,64 +4,41 @@ import os
 from pathlib import Path
 import dj_database_url
 from decouple import config
-from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv()
 
-# ==============================================================================
-# CORE SETTINGS
-# ==============================================================================
+# --- SECURITY SETTINGS ---
+# Use decouple to get the secret key from a .env file locally,
+# or from Vercel's environment variables in production.
+SECRET_KEY = config('SECRET_KEY')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# Reads the SECRET_KEY from an environment variable.
-SECRET_KEY = os.getenv('SECRET_KEY') if "SECRET_KEY" in os.environ["SECRET_KEY"] else config("SECRET_KEY")
+# DEBUG will be False in production on Vercel
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-# Reads the DEBUG setting from an environment variable. Defaults to False.
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-
-# Defines the allowed hosts for different environments.
-ALLOWED_HOSTS = ['*']
-
-# Add the Vercel deployment URL to the allowed hosts
-VERCEL_URL = os.environ.get('VERCEL_URL')
-if VERCEL_URL:
-    # A more robust way to handle the URL, whether it has https:// or not
-    if '://' in VERCEL_URL:
-        ALLOWED_HOSTS.append(VERCEL_URL.split('://')[1])
-    else:
-        ALLOWED_HOSTS.append(VERCEL_URL)
-
-# Add the Render deployment URL to the allowed hosts
-RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
-
-# Add local hosts for development if DEBUG is True
-if DEBUG:
-    ALLOWED_HOSTS.extend(['127.0.0.1', 'localhost'])
+# Add your Vercel app URL here.
+# The '.vercel.app' domain is a wildcard for all Vercel deployments.
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.vercel.app']
 
 
-
-# ==============================================================================
-# APPLICATION DEFINITION
-# ==============================================================================
-
+# --- APPLICATION DEFINITION ---
 INSTALLED_APPS = [
-    "polls.apps.PollsConfig",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    # Add whitenoise for static files
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic', # Added for Whitenoise
+    # Your apps
+    'bio',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Added for Whitenoise
+    # Add whitenoise middleware right after security middleware
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -79,6 +56,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -90,22 +68,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'instabio.wsgi.application'
 
 
-# ==============================================================================
-# DATABASE
-# ==============================================================================
+# --- DATABASE CONFIGURATION ---
+# This will use your Neon database URL in production and fallback to SQLite locally.
+# We will create a .env file for local development next.
 DATABASES = {
     'default': dj_database_url.config(
-        # This reads the DATABASE_URL from your environment.
-        # It correctly falls back to SQLite for local development.
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        default=config('DATABASE_URL'),
         conn_max_age=600
-        # The problematic 'ssl_require=True' line has been removed.
     )
 }
-# ===================================================================
-# PASSWORD VALIDATION
-# ==============================================================================
 
+
+# --- PASSWORD VALIDATION ---
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -114,25 +88,26 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# ==============================================================================
-# INTERNATIONALIZATION & STATIC FILES
-# ==============================================================================
-
+# --- INTERNATIONALIZATION ---
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Asia/Kolkata'
+TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+
+# --- STATIC FILES (CSS, JavaScript, Images) ---
 STATIC_URL = 'static/'
-# This is where collectstatic will gather all static files.
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles_build", "static")
-STATIC_URL = "/staticfiles/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-# Using Whitenoise for efficient static file serving.
+# This is where Django will collect all static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# This is the storage engine for static files
 STORAGES = {
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
 }
 
+# --- DEFAULT PRIMARY KEY FIELD TYPE ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
