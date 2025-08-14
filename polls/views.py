@@ -3,21 +3,26 @@
 from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse
 from django.db.models import F
-from django.db import transaction # Import the transaction module
+from django.db import transaction
 from .models import Question, Choice
 import os
-def index(request):
-    # Print the VERCEL_URL to the logs for debugging
-    print("VERCEL_URL environment variable is:", os.environ.get('VERCEL_URL'))
+
+# This is the NEW homepage view that was missing.
+# It will render your homepage.html template.
+def homepage(request):
+    return render(request, 'polls/homepage.html')
+
+# This is your view for a specific profile page like /your-name/
+# I have removed the duplicate and kept the one that matches your urls.py
+def index(request, username):
+    # This line is for debugging if you need it
+    print(f"Fetching data for user: {username}")
     
     question = get_object_or_404(Question, pk=1)
     return render(request, 'polls/index.html', {'question': question})
 
-def index(request):
-    question = get_object_or_404(Question, pk=1)
-    return render(request, 'polls/index.html', {'question': question})
-
 # This decorator ensures all database operations within the function are safe
+# Your vote function is correct, no changes are needed here.
 @transaction.atomic
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
