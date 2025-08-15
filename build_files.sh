@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-# Install setuptools to provide the missing 'distutils' for Python 3.12+
-pip3 install setuptools
+# Upgrade packaging tools to be compatible with Python 3.12
+pip3 install --upgrade pip setuptools
 
 # Now, install all other dependencies
 pip3 install -r requirements.txt
